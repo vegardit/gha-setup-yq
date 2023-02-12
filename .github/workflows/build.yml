@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: © Vegard IT GmbH (https://vegardit.com) and contributors
+# SPDX-FileContributor: Sebastian Thomschke, Vegard IT GmbH
+# SPDX-License-Identifier: Apache-2.0
+#
+# https://docs.github.com/en/free-pro-team@latest/actions/reference/workflow-syntax-for-github-actions
+name: Build
+
+on:
+  push:
+    branches:
+    - '**'
+    tags-ignore:
+    - '**'
+    paths-ignore:
+    - '**/*.md'
+    - '.github/*.yml'
+  pull_request:
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+        - ubuntu-latest
+        - macos-latest
+        - windows-latest
+
+    steps:
+    - name: Git Checkout
+      uses: actions/checkout@v3 #https://github.com/actions/checkout
+
+    - name: Install yq '4.30.6'
+      id: install-yq-4_30_6
+      uses: ./
+      with:
+        version: 4.30.6
+
+    - name: Test yq '4.30.6'
+      run: |
+        set -euxo pipefail
+        yq --version
+        echo 'greeting: "Hello World"' | yq -e ".greeting"
+        [[ '${{ steps.install-yq-4_30_6.outputs.version }}' == '4.30.6' ]]
+
+    - name: Install yq 'any'
+      id: install-yq-any
+      uses: ./
+
+    - name: Test yq 'any'
+      run: |
+        set -euxo pipefail
+        yq --version
+        echo 'greeting: "Hello World"' | yq -e ".greeting"
+        [[ '${{ steps.install-yq-any.outputs.version }}' == '4.30.6' ]]
+
+    - name: Install yq 'latest'
+      id: install-yq-latest
+      uses: ./
+      with:
+        version: latest
+
+    - name: Test yq 'latest'
+      run: |
+        set -euxo pipefail
+        yq --version
+        echo 'greeting: "Hello World"' | yq -e ".greeting"
+        [[ '${{ steps.install-yq.outputs.latest.version }}' != '4.30.6' ]]
