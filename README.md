@@ -64,7 +64,7 @@ jobs:
 ```yaml
 with:
   version: any    # yq version to install, possible values:
-                  # - "any" -> meaning if jq is installed already or found in cache, then just use that version
+                  # - "any" -> meaning if yq is installed already or found in cache, then just use that version
                   # - "latest"
                   # - a version number, e.g. '4.30.8'
   use-cache: true # if the downloaded yq binary should be cached using the GHA caching service
