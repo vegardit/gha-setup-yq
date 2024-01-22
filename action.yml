@@ -36,7 +36,7 @@ runs:
     - name: 'yq: cache restore'
       id: YQ-CACHE
       if: ${{ (inputs.use-cache == true || inputs.use-cache == 'true') && !env.ACT }} # https://github.com/nektos/act#skipping-steps
-      uses: actions/cache/restore@v3 # https://github.com/actions/cache/tree/main/restore
+      uses: actions/cache/restore@v4 # https://github.com/actions/cache/tree/main/restore
       with:
         path: ${{ runner.temp }}/yq
         key: ${{ runner.os }}-yq-${{ inputs.version }}
@@ -176,7 +176,7 @@ runs:
         echo '::endgroup::'
 
     - name: 'yq: cache update'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@v4
       if: ${{ steps.YQ-SETUP.outputs.need_cache_update == 'true' }}
       with:
         path: ${{ runner.temp }}/yq
