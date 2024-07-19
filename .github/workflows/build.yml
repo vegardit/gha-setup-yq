@@ -30,7 +30,8 @@ jobs:
       matrix:
         os:
         - ubuntu-latest
-        - macos-latest
+        - macos-12     # x64
+        - macos-latest # ARM 
         - windows-latest
 
     steps:

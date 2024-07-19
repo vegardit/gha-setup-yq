@@ -29,7 +29,7 @@ outputs:
 runs:
   using: 'composite'
   steps:
-  
+
     ##################################################
     # Setup Cache
     ##################################################
@@ -58,11 +58,11 @@ runs:
         function get_installed_version() {
           "${1:-$app_home/$app_target_bin}" --version | grep -o '[^ ]*$' | grep -o '[^/]*$' | cut -c2-
         }
-        
+
         INPUTS_VERSION_LOWERCASE="$(tr '[:upper:]' '[:lower:]' <<<"$INPUTS_VERSION")"
-        
+
         if [[ $INPUTS_VERSION_LOWERCASE == 'any' ]] && hash yq &>/dev/null; then
-        
+
           # set outputs
           echo "need_cache_update=false" | tee -a "$GITHUB_OUTPUT"
           case "$RUNNER_OS" in
@@ -70,11 +70,11 @@ runs:
             *)       echo "path=$(which yq)" | tee -a "$GITHUB_OUTPUT" ;;
           esac
           echo "version=$(get_installed_version "$(which yq)")" | tee -a "$GITHUB_OUTPUT"
-        
+
         else
-        
+
           APP_REPO_ROOT=https://github.com/mikefarah/yq
-        
+
           case "$RUNNER_OS" in
             macOS)
               app_home="$RUNNER_TEMP/yq"
@@ -100,17 +100,23 @@ runs:
               app_source_bin='yq_windows_amd64.exe'
               ;;
           esac
-        
+
           echo "app_home: $app_home"
           echo "app_source_bin: $app_source_bin"
           echo "app_target_bin: $app_target_bin"
-        
+
           function get_latest_version() {
+            # temporary workaround for https://github.com/curl/curl/issues/13845
+            if [[ $RUNNER_OS == "Windows" ]]; then
+              (set -x; powershell -Command "(Invoke-WebRequest -Uri '$APP_REPO_ROOT/releases/latest' -Method Head -MaximumRedirection 0 -ErrorAction Ignore -UseBasicParsing).Headers.Location" | grep -o '[^/]*$' | cut -c2-)
+              return
+            fi
+
             (set -x; curl -sSfL --max-time 5 -o /dev/null -w '%{url_effective}' $APP_REPO_ROOT/releases/latest | grep -o '[^/]*$' | cut -c2-)
           }
-        
+
           app_downloaded=false
-        
+
           function download_app() {
             app_download_url="$APP_REPO_ROOT/releases/download/v$1/$app_source_bin"
             echo "Downloading [$app_download_url]..."
@@ -119,7 +125,7 @@ runs:
             chmod 777 "$app_home/$app_target_bin"
             app_downloaded=true
           }
-        
+
           case "$INPUTS_VERSION_LOWERCASE" in
             any)
               if [[ ! -f "$app_home/$app_target_bin" ]]; then
@@ -147,9 +153,9 @@ runs:
               fi
               ;;
           esac
-        
+
           echo "$RUNNER_TEMP/yq" >> "$GITHUB_PATH"
-        
+
           # prepare cache update
           if [[ $INPUTS_USE_CACHE == 'true' && ${ACT:-} != 'true' ]]; then # $ACT is set when running via nektos/act
             if [[ $app_downloaded == 'true' ]]; then
@@ -164,7 +170,7 @@ runs:
           else
             need_cache_update=false
           fi
-        
+
           # set outputs
           echo "need_cache_update=$need_cache_update" | tee -a "$GITHUB_OUTPUT"
           case "$RUNNER_OS" in
