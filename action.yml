@@ -106,7 +106,7 @@ runs:
           echo "app_target_bin: $app_target_bin"
         
           function get_latest_version() {
-            curl -sSfL --max-time 5 -o /dev/null -w '%{url_effective}' $APP_REPO_ROOT/releases/latest | grep -o '[^/]*$' | cut -c2-
+            (set -x; curl -sSfL --max-time 5 -o /dev/null -w '%{url_effective}' $APP_REPO_ROOT/releases/latest | grep -o '[^/]*$' | cut -c2-)
           }
         
           app_downloaded=false
@@ -115,7 +115,7 @@ runs:
             app_download_url="$APP_REPO_ROOT/releases/download/v$1/$app_source_bin"
             echo "Downloading [$app_download_url]..."
             mkdir -p "$app_home"
-            curl -fsSL --max-time 10 --retry 3 --retry-delay 5 -o "$app_home/$app_target_bin" "$app_download_url"
+            (set -x; curl -fsSL --max-time 10 --retry 3 --retry-delay 5 -o "$app_home/$app_target_bin" "$app_download_url")
             chmod 777 "$app_home/$app_target_bin"
             app_downloaded=true
           }
