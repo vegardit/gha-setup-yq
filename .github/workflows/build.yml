@@ -28,9 +28,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os:
+        os:  # https://github.com/actions/runner-images#available-images
         - ubuntu-latest
-        - macos-12     # x64
+        - macos-13     # x64
         - macos-latest # ARM 
         - windows-latest
 
