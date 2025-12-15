@@ -30,8 +30,9 @@ jobs:
       matrix:
         os:  # https://github.com/actions/runner-images#available-images
         - ubuntu-latest
-        - macos-13     # x64
-        - macos-latest # ARM 
+        - ubuntu-24.04-arm  # https://github.com/actions/partner-runner-images#available-images
+        - macos-15-intel  # x64
+        - macos-latest    # ARM 
         - windows-latest
 
     steps:

@@ -8,7 +8,7 @@
 **Feedback and high-quality pull requests are highly welcome!**
 
 1. [What is it?](#what-is-it)
-1. [Usage](#github_action)
+1. [Usage](#usage)
 1. [License](#license)
 
 
@@ -17,11 +17,12 @@
 **gha-setup-yq** is a GitHub action to install the [yq](https://github.com/mikefarah/yq/releases/) command-line YAML, JSON, XML, CSV and properties parser/processor.
 
 
-## <a name="github_action"></a>Usage
+## <a name="usage"></a>Usage
 
-In your GitHub actions workflow specify:
+In your GitHub Actions workflow specify:
 
 ### Installing the latest version:
+
 ```yaml
 name: Build
 on: [ push, pull_request ]

@@ -39,7 +39,7 @@ runs:
       uses: actions/cache/restore@v4 # https://github.com/actions/cache/tree/main/restore
       with:
         path: ${{ runner.temp }}/yq
-        key: ${{ runner.os }}-yq-${{ inputs.version }}
+        key: ${{ runner.os }}-${{ runner.arch }}-yq-${{ inputs.version }}
 
     ##################################################
     # Install yq
@@ -88,10 +88,10 @@ runs:
               app_home="$RUNNER_TEMP/yq"
               app_target_bin=yq
               case $(uname -m) in # https://stackoverflow.com/questions/45125516/possible-values-for-uname-m
-                     i386|i686) app_source_bin='yq_linux_386' ;;
-                        x86_64) app_source_bin='yq_linux_amd64' ;;
-                           arm) app_source_bin='yq_linux_arm' ;;
-                armv*|aarch64*) app_source_bin='yq_linux_arm64' ;;
+                    i386|i686) app_source_bin='yq_linux_386' ;;
+                       x86_64) app_source_bin='yq_linux_amd64' ;;
+                aarch64|arm64) app_source_bin='yq_linux_arm64' ;;
+                            *) echo "ERROR: Unsupported architecture $(uname -m)"; exit 1 ;;
               esac
               ;;
             Windows)
@@ -177,7 +177,8 @@ runs:
             Windows) echo "path=$(cygpath -w "$app_home/$app_target_bin")" | tee -a "$GITHUB_OUTPUT" ;;
             *)       echo "path=$app_home/$app_target_bin" | tee -a "$GITHUB_OUTPUT" ;;
           esac
-          echo "version=$(get_installed_version)" | tee -a "$GITHUB_OUTPUT"        
+          echo "version=$(get_installed_version)" | tee -a "$GITHUB_OUTPUT"
+
         fi
         echo '::endgroup::'
 
